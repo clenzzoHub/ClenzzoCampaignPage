@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clenzzo 500 Celebration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #111827; /* Dark background */
+            overflow-x: hidden;
+            overflow-y: scroll;
+            color: #F9FAFB; /* Default text to white */
+        }
+        .body-locked {
+             overflow: hidden;
+        }
+        .brand-teal { color: #14B8A6; }
+        .bg-brand-teal { background-color: #14B8A6; }
+        .border-brand-teal { border-color: #14B8A6; }
+        .form-input {
+            background-color: #1F2937;
+            border: 1px solid #4B5563;
+            color: #F9FAFB;
+            border-radius: 0.5rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #14B8A6;
+            box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.5);
+        }
+        .form-input.border-red-500 { border-color: #ef4444; }
+        .form-input.border-green-500 { border-color: #22c55e; }
+
+        .card-style {
+            background-color: #1F2937;
+            border: 1px solid #4B5563;
+            transition: all 0.3s ease;
+        }
+        .card-style.selected {
+            border-color: #14B8A6;
+            box-shadow: 0 0 15px rgba(20, 184, 166, 0.4);
+            transform: translateY(-5px);
+        }
+        .disabled-card {
+            background-color: #374151;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background-color: #14B8A6;
+            color: white;
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary:hover {
+            background-color: #0D9488;
+            box-shadow: 0 0 15px rgba(20, 184, 166, 0.5);
+        }
+        .btn-primary:disabled {
+            background-color: #374151;
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+        
+        /* --- SPLASH SCREEN STYLES --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #111827;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.7s ease-out, visibility 0.7s ease-out;
+        }
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #splash-logo-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #splash-logo {
+            max-width: 200px; /* Slightly smaller for better swirl visibility */
+            opacity: 0;
+            animation: logo-celebrate 2.5s ease-out forwards;
+            z-index: 10;
+        }
+        @keyframes logo-celebrate {
+            0% { transform: scale(0.5); opacity: 0; }
+            40% { transform: scale(1.1); opacity: 1; }
+            60% { transform: scale(1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .confetti-particle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #countdown-timer .time-block {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        #slot-counter-card {
+            background-color: #1F2937;
+            border: 1px solid #4B5563;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .slot-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #0D9488, #14B8A6);
+            border-radius: 0 0 0.75rem 0.75rem;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #14B8A6;
+            opacity: 0.7;
+            animation: confetti-fall 8s linear infinite;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-10vh) rotateZ(0deg); }
+            100% { transform: translateY(110vh) rotateZ(720deg); }
+        }
+
+        #app {
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+        
+        #form-details-container {
+            transition: opacity 0.6s ease-in-out, max-height 0.8s ease-in-out;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        #terms-content::-webkit-scrollbar { width: 8px; }
+        #terms-content::-webkit-scrollbar-track { background: #1F2937; }
+        #terms-content::-webkit-scrollbar-thumb {
+            background-color: #4B5563;
+            border-radius: 10px;
+            border: 2px solid #1F2937;
+        }
+    </style>
+</head>
+<body class="body-locked">
+
+    <div id="splash-screen">
+        <div id="splash-logo-container">
+             <div id="confetti-burst-container" class="absolute w-full h-full"></div>
+            <img id="splash-logo" src="https://lh3.googleusercontent.com/d/1mAxNMp4-N-4FpIi_BPZZfCCaK5RCxVUH" alt="Clenzzo Logo">
+        </div>
+    </div>
+
+    <div id="confetti-container" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></div>
+
+    <div id="app" class="relative z-10 container mx-auto p-4 md:p-8 max-w-4xl">
+
+        <header class="text-center mb-8">
+            <img src="https://lh3.googleusercontent.com/d/1mAxNMp4-N-4FpIi_BPZZfCCaK5RCxVUH" alt="Clenzzo Logo" class="mx-auto h-12 md:h-16">
+            <p class="text-gray-400 mt-2">Cleaning made simple</p>
+        </header>
+
+        <main>
+            <section id="homepage" class="text-center">
+                <h2 class="text-3xl md:text-4xl font-black mb-2">Grand <span class="brand-teal">500</span> Celebration!</h2>
+                <p class="text-lg text-gray-300 mb-8">We're giving away <span class="font-bold">FREE</span> professional, waterless & eco-friendly car cleaning services to 500 lucky cars in Trichy!</p>
+                
+                <div id="campaign-status" class="mb-10 space-y-8">
+                    <div id="countdown-timer" class="flex justify-center items-center space-x-2 md:space-x-4 text-center"></div>
+                    <div id="total-slots-display" class="w-full max-w-md mx-auto"></div>
+                </div>
+
+                <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-lg shadow-lg mb-10 text-left grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold brand-teal mb-4">Campaign Highlights</h3>
+                        <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-teal mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg><span><span class="font-semibold text-white">500 Free Washes:</span> First come, first served!</span></li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-teal mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span><span class="font-semibold text-white">5 Days Only:</span> October 13th to 17th, 2025.</span></li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-teal mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span><span class="font-semibold text-white">100 Slots Daily:</span> Book your preferred time.</span></li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-teal mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg><span><span class="font-semibold text-white">Expert Cleaning:</span> Experience the Clenzzo difference.</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold brand-teal mb-4">Why Choose Clenzzo?</h3>
+                         <ul class="space-y-3 text-gray-300">
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-teal mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span><span class="font-semibold text-white">Eco-Friendly:</span> Specialized waterless cleaning formula.</span></li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-teal mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547a2 2 0 00-.547 1.806l.477 2.387a6 6 0 00.517 3.86l.158.318a6 6 0 00.517 3.86l2.387.477a2 2 0 001.806-.547a2 2 0 00.547-1.806l-.477-2.387a6 6 0 00-.517-3.86l-.158-.318a6 6 0 01-.517-3.86l-.477-2.387a2 2 0 00-.547-1.806zM15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span><span class="font-semibold text-white">Premium Products:</span> Safe for your car & the planet.</span></li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-teal mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg><span><span class="font-semibold text-white">Trained Professionals:</span> Meticulous attention to detail.</span></li>
+                            <li class="flex items-start"><svg class="w-5 h-5 brand-teal mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.085a2 2 0 00-1.736.93L5 10m7 0a2 2 0 002 2h2.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20"></path></svg><span><span class="font-semibold text-white">Satisfaction Guaranteed:</span> Your car will shine like new.</span></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="max-w-md mx-auto mb-6">
+                    <label for="offerCodeInput" class="block text-lg font-semibold text-gray-200 mb-2">Unlock Your FREE Clean!</label>
+                    <div class="flex items-stretch gap-2">
+                        <input type="text" id="offerCodeInput" placeholder="ENTER OFFER CODE" class="form-input p-3 w-full uppercase flex-grow text-center tracking-widest font-bold">
+                        <a id="getOfferCodeBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary bg-gray-600 hover:bg-gray-500 whitespace-nowrap px-4 flex items-center justify-center">Get One</a>
+                    </div>
+                    <p id="offerCodeError" class="text-red-400 text-sm mt-2 font-semibold text-left hidden"></p>
+                </div>
+                <button id="proceedToBookBtn" class="btn-primary text-xl" disabled>Avail Your Free Clean!</button>
+            </section>
+
+            <!-- Booking Form Section -->
+            <section id="bookingForm" class="hidden">
+                <form id="car-wash-form" novalidate>
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-bold brand-teal mb-4 text-center">Step 1: Select a Date</h2>
+                        <div id="date-selection" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6"></div>
+                    </div>
+                    
+                    <div id="form-details-container" class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-bold brand-teal mb-3">Step 2: Personal Details</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <input type="text" id="name" name="name" placeholder="Full Name" class="form-input p-3 w-full" required>
+                                <input type="tel" id="phone" name="phone" placeholder="10-Digit Phone Number" class="form-input p-3 w-full" required pattern="[6-9][0-9]{9}">
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold brand-teal mb-3">Step 3: Address Details</h3>
+                            <div class="mb-4">
+                                <label class="block mb-2 text-sm font-medium text-gray-300">Location Type</label>
+                                 <div id="house-type-selection" class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center"></div>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <input type="text" id="address1" name="address1" placeholder="Address Line 1" class="form-input p-3 w-full" required>
+                                <input type="text" id="address2" name="address2" placeholder="Address Line 2" class="form-input p-3 w-full">
+                                <input type="text" id="landmark" name="landmark" placeholder="Landmark" class="form-input p-3 w-full">
+                                <input type="text" id="pincode" name="pincode" placeholder="Pincode" class="form-input p-3 w-full" required>
+                                <input type="text" id="city" name="city" value="Tiruchirappalli" class="form-input p-3 w-full bg-gray-700" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold brand-teal mb-3">Step 4: Car Details</h3>
+                            <div class="mb-4">
+                                <label class="block mb-2 text-sm font-medium text-gray-300">Car Type</label>
+                                <div id="car-type-selection" class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center"></div>
+                            </div>
+                            <div class="grid md:grid-cols-3 gap-4">
+                                <input type="text" id="plateNumber" name="plateNumber" placeholder="e.g., TN81J7736" class="form-input p-3 w-full uppercase" required>
+                                <select id="carBrand" name="carBrand" class="form-input p-3 w-full" required><option value="">-- Select Brand --</option></select>
+                                <select id="carModel" name="carModel" class="form-input p-3 w-full" required><option value="">-- Select Model --</option></select>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold brand-teal mb-3">Step 5: Select a Time Slot</h3>
+                             <select id="timeSlot" name="timeSlot" class="form-input p-3 w-full" required><option value="">-- Time slots will appear here --</option></select>
+                        </div>
+                        
+                        <!-- Summary and Action Button Group -->
+                        <div>
+                            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                                <h3 class="text-xl font-black text-center brand-teal mb-4 border-b border-gray-600 pb-2">Clenzzo 500 Celebration</h3>
+                                <div id="booking-summary" class="space-y-2 text-gray-300"><p>Please fill out the form to see your summary.</p></div>
+                            </div>
+                             <div class="text-center mt-6">
+                                <button type="submit" id="submitBtn" class="btn-primary text-lg w-full md:w-auto">Book Now</button>
+                                <p id="form-error" class="text-red-500 text-center font-semibold mt-4 h-4"></p>
+                                <p class="text-gray-400 text-sm mt-3 max-w-sm mx-auto">
+                                    Your booking will be confirmed only when you send your booking summary through WhatsApp after clicking "Book Now". You will then receive your service card.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </section>
+
+            <!-- Thank You Page Section -->
+            <section id="thankYouPage" class="hidden text-center py-10">
+                <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-lg shadow-lg max-w-lg mx-auto">
+                    <h2 class="text-3xl md:text-4xl font-black mb-3">Thank You, <span id="userName" class="brand-teal"></span>!</h2>
+                    <p class="text-lg text-gray-300 mb-6">Your free car clean slot is reserved. Please complete the final step by sending the pre-filled message on WhatsApp.</p>
+                    <div class="bg-gray-900 p-4 rounded-lg mb-8 text-left">
+                        <p class="text-sm text-gray-400">Your Booking ID</p>
+                        <p id="bookingIdDisplay" class="text-2xl font-bold text-white tracking-widest"></p>
+                    </div>
+                    <div class="flex flex-wrap justify-center items-center gap-4">
+                        <button id="goHomeBtn" class="btn-primary">Home</button>
+                        <a href="https://www.clenzzo.com" target="_blank" class="btn-primary bg-gray-600 hover:bg-gray-500">Visit Website</a>
+                        <a href="tel:+918122213141" class="btn-primary bg-gray-600 hover:bg-gray-500">Call Us</a>
+                        <a href="https://www.instagram.com/clenzzo_india?igsh=OWU4YXowbjE5YmZi&utm_source=qr" target="_blank" class="btn-primary w-full bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-600 hover:to-orange-500">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z" /></svg>
+                            Follow on Instagram
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 border-t border-gray-700 pt-6 pb-2">
+            <p class="text-gray-400">Built with <span class="text-red-500">&hearts;</span> by Clenzzo</p>
+            <p class="text-sm text-gray-500 mt-1">© 2025 Clenzzo. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="terms-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 md:p-8 max-w-2xl w-full transform transition-all">
+            <h2 class="text-2xl font-bold brand-teal mb-4">Terms & Conditions</h2>
+            <div id="terms-content" class="text-gray-300 space-y-3 max-h-[60vh] overflow-y-auto pr-4 mb-6">
+                <p>Welcome to the Clenzzo Grand 500 Celebration! Please read these terms carefully before participating.</p>
+                <h3 class="font-semibold text-white mt-2">1. Eligibility:</h3>
+                <p>This campaign is open to car owners residing within the Tiruchirappalli (Trichy) city limits specified by the eligible pincodes. One free service is allowed per person, per car, per phone number, and per address during the campaign period.</p>
+                <h3 class="font-semibold text-white mt-2">2. Campaign Period:</h3>
+                <p>The free cleaning service is available only from October 13th, 2025, to October 17th, 2025. Bookings are subject to daily slot availability.</p>
+                <h3 class="font-semibold text-white mt-2">3. Booking & Confirmation:</h3>
+                <p>Slots are booked on a first-come, first-served basis through this official campaign page. Your booking is considered reserved only after you fill the form. Final confirmation is completed by sending the pre-filled message via WhatsApp. Clenzzo is not responsible for booking failures due to technical issues.</p>
+                <h3 class="font-semibold text-white mt-2">4. Service Details:</h3>
+                <p>The free service includes a professional exterior waterless car clean. Additional services are not included and may be availed at extra cost. The service will be conducted at the address provided during booking. Please ensure your vehicle is accessible at the scheduled time.</p>
+                 <h3 class="font-semibold text-white mt-2">5. Data Privacy:</h3>
+                <p>By participating, you consent to Clenzzo collecting your personal details (name, phone number, address, car details) for the purpose of scheduling and providing the service. We respect your privacy and will not share your data with third parties without your consent.</p>
+                 <h3 class="font-semibold text-white mt-2">6. Right to Refuse Service:</h3>
+                <p>Clenzzo reserves the right to refuse service if the vehicle is in an unsafe condition, located in an inaccessible or unsafe area, or if the user provides false information or abuses the campaign offer.</p>
+                <h3 class="font-semibold text-white mt-2">7. General Conditions:</h3>
+                <p>Clenzzo reserves the right to modify or cancel the campaign at any time without prior notice. By booking a slot, you agree to all the terms and conditions mentioned above.</p>
+            </div>
+            <div class="flex items-center space-x-4 mb-6">
+                <input type="checkbox" id="terms-agree-checkbox" class="w-5 h-5 bg-gray-700 border-gray-600 rounded text-teal-500 focus:ring-teal-500">
+                <label for="terms-agree-checkbox" class="text-gray-200">I have read and agree to the Terms & Conditions.</label>
+            </div>
+            <div class="flex justify-end space-x-4">
+                 <button id="modal-proceed-btn" class="btn-primary" disabled>Proceed to Booking</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURATION ---
+            const WHATSAPP_NUMBER = '918122213141';
+            const VALID_OFFER_CODE = 'CLZ500';
+            const DAILY_SLOT_LIMIT = 100;
+            const CAMPAIGN_START_DATE = '2025-10-13T06:00:00';
+            const CAMPAIGN_DATES = ['2025-10-13', '2025-10-14', '2025-10-15', '2025-10-16', '2025-10-17'];
+            const TIME_SLOTS = Array.from({ length: 12 }, (_, i) => `${(i + 6).toString().padStart(2, '0')}:00`);
+            const TRICHY_PINCODES = ["620001", "620002", "620003", "620004", "620005", "620006", "620007", "620008", "620009", "620010", "620011", "620012", "620013", "620014", "620015", "620016", "620017", "620018", "620019", "620020", "620021"];
+            const HOUSE_TYPES = ['Apartment', 'Independent House', 'Office', 'Parking Lot', 'Others'];
+            const CAR_TYPES = ['Hatchback', 'Sedan', 'SUV', 'MPV', 'Electric'];
+            const CAR_DATA = { "Maruti Suzuki": ["Swift", "Baleno", "Brezza", "Ertiga", "Dzire", "WagonR", "Alto", "Ciaz", "XL6"], "Hyundai": ["Creta", "Venue", "i20", "Grand i10 Nios", "Verna", "Aura", "Tucson", "Alcazar"], "Tata": ["Nexon", "Punch", "Harrier", "Safari", "Altroz", "Tiago", "Tigor"], "Mahindra": ["XUV700", "Scorpio-N", "Thar", "Bolero", "XUV300"], "Kia": ["Seltos", "Sonet", "Carens", "EV6"], "Toyota": ["Innova Crysta", "Fortuner", "Glanza", "Hyryder", "Hilux", "Vellfire"], "Honda": ["City", "Amaze", "Elevate"], "Volkswagen": ["Polo", "Vento", "Taigun", "Virtus"], "Skoda": ["Kushaq", "Slavia", "Octavia", "Kodiaq"], "Renault": ["Kiger", "Triber", "Kwid"], "MG": ["Hector", "Astor", "ZSEV", "Gloster"], "Nissan": ["Magnite", "Kicks"], "Jeep": ["Compass", "Meridian"], "Citroen": ["C3", "C5 Aircross"], "Ford": ["EcoSport", "Endeavour", "Figo"], "Audi": ["A4", "Q3", "Q5", "Q7"], "BMW": ["3 Series", "5 Series", "X1", "X3", "X5"], "Mercedes-Benz": ["C-Class", "E-Class", "GLA", "GLC", "GLE"], "Jaguar": ["XE", "XF", "F-Pace"], "Land Rover": ["Defender", "Discovery", "Range Rover Evoque"], "Volvo": ["XC40", "XC60", "XC90", "S90"], "Lexus": ["ES", "NX", "RX"], "Isuzu": ["D-Max V-Cross"], };
+            const PLATE_NUMBER_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$/;
+            const PINCODE_REGEX = /^62\d{4}$/;
+
+
+            // --- DOM ELEMENTS ---
+            const body = document.body;
+            const splashScreen = document.getElementById('splash-screen');
+            const confettiBurstContainer = document.getElementById('confetti-burst-container');
+            const app = document.getElementById('app');
+            const confettiContainer = document.getElementById('confetti-container');
+            const homepage = document.getElementById('homepage');
+            const bookingFormPage = document.getElementById('bookingForm');
+            const thankYouPage = document.getElementById('thankYouPage');
+            const proceedToBookBtn = document.getElementById('proceedToBookBtn');
+            const form = document.getElementById('car-wash-form');
+            const formDetailsContainer = document.getElementById('form-details-container');
+            const dateSelectionContainer = document.getElementById('date-selection');
+            const timeSlotSelect = document.getElementById('timeSlot');
+            const carTypeContainer = document.getElementById('car-type-selection');
+            const houseTypeContainer = document.getElementById('house-type-selection');
+            const carBrandSelect = document.getElementById('carBrand');
+            const carModelSelect = document.getElementById('carModel');
+            const bookingSummary = document.getElementById('booking-summary');
+            const formError = document.getElementById('form-error');
+            const countdownTimerEl = document.getElementById('countdown-timer');
+            const totalSlotsDisplayEl = document.getElementById('total-slots-display');
+            const termsModal = document.getElementById('terms-modal');
+            const termsAgreeCheckbox = document.getElementById('terms-agree-checkbox');
+            const modalProceedBtn = document.getElementById('modal-proceed-btn');
+            const goHomeBtn = document.getElementById('goHomeBtn');
+            const offerCodeInput = document.getElementById('offerCodeInput');
+            const getOfferCodeBtn = document.getElementById('getOfferCodeBtn');
+            const offerCodeError = document.getElementById('offerCodeError');
+            const plateNumberInput = document.getElementById('plateNumber');
+            
+            let state = { selectedDate: null, selectedCarType: null, selectedHouseType: null, bookingId: null };
+            let countdownInterval;
+
+            function getInitialData() {
+                const storedData = localStorage.getItem('clenzzoCampaign');
+                if (storedData) return JSON.parse(storedData);
+                const initialData = { bookings: {}, usedData: { phoneNumbers: [], plateNumbers: [], addresses: [] } };
+                CAMPAIGN_DATES.forEach(date => {
+                    initialData.bookings[date] = { total: 0, slots: {} };
+                    TIME_SLOTS.forEach((slot, index) => { initialData.bookings[date].slots[slot] = { booked: 0, capacity: index < 4 ? 9 : 8 }; });
+                });
+                return initialData;
+            }
+            let campaignData = getInitialData();
+            function saveData() { localStorage.setItem('clenzzoCampaign', JSON.stringify(campaignData)); }
+
+            // --- ANIMATIONS & UTILITIES ---
+            function createSwirlConfetti() {
+                for (let i = 0; i < 100; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'confetti-particle';
+                    const colors = ['#14B8A6', '#F9FAFB', '#5EEAD4', '#A7F3D0'];
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    const angle = Math.random() * 360;
+                    const finalRadius = Math.random() * 150 + 80;
+                    particle.animate([
+                        { transform: `translate(-50%, -50%) rotate(${angle}deg) translateX(0) scale(0.5)`, opacity: 1 },
+                        { transform: `translate(-50%, -50%) rotate(${angle + 180}deg) translateX(${finalRadius * 0.5}px) scale(1)`, opacity: 0.8, offset: 0.5 },
+                        { transform: `translate(-50%, -50%) rotate(${angle + 360}deg) translateX(${finalRadius}px) scale(0)`, opacity: 0 }
+                    ], {
+                        duration: Math.random() * 1000 + 1500,
+                        easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)',
+                        fill: 'forwards'
+                    });
+                    confettiBurstContainer.appendChild(particle);
+                    setTimeout(() => particle.remove(), 2500);
+                }
+            }
+
+            function createPersistentConfetti() {
+                for (let i = 0; i < 40; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.animationDelay = `${Math.random() * 8}s`;
+                    confetti.style.backgroundColor = `hsl(${160 + Math.random() * 40}, 70%, 60%)`;
+                    confetti.style.transform = `scale(${Math.random() * 0.5 + 0.7})`;
+                    confettiContainer.appendChild(confetti);
+                }
+            }
+
+            function startTransition() {
+                splashScreen.classList.add('hidden');
+                app.style.opacity = '1';
+                body.classList.remove('body-locked');
+                createPersistentConfetti();
+            }
+            const generateBookingId = () => `CLZ${Date.now().toString().slice(-6)}`;
+
+            // --- UI RENDERING & LOGIC ---
+            function renderDateCards() { dateSelectionContainer.innerHTML = ''; CAMPAIGN_DATES.forEach(dateStr => { const dateObj = new Date(dateStr); const day = dateObj.toLocaleDateString('en-US', { day: 'numeric' }); const month = dateObj.toLocaleDateString('en-US', { month: 'short' }); const dailyBookings = campaignData.bookings[dateStr].total; const slotsLeft = DAILY_SLOT_LIMIT - dailyBookings; const isFull = slotsLeft <= 0; const card = document.createElement('div'); card.className = `p-4 rounded-lg text-center cursor-pointer card-style ${isFull ? 'disabled-card' : ''}`; card.dataset.date = dateStr; card.innerHTML = `<div class="text-3xl font-bold">${day}</div><div class="text-lg">${month}</div><div class="mt-2 text-sm font-semibold ${isFull ? 'text-red-400' : 'brand-teal'}">${isFull ? 'FULLY BOOKED' : `${slotsLeft} Slots Left`}</div>`; if (!isFull) card.addEventListener('click', () => handleDateSelection(dateStr)); dateSelectionContainer.appendChild(card); }); }
+            function renderCardSelection(container, items, stateKey, handler) { container.innerHTML = ''; items.forEach(type => { const card = document.createElement('div'); card.className = 'p-3 rounded-lg cursor-pointer card-style'; card.dataset.type = type; card.textContent = type; card.addEventListener('click', () => handler(type)); container.appendChild(card); }); }
+            function populateCarBrands() { Object.keys(CAR_DATA).sort().forEach(brand => { const option = document.createElement('option'); option.value = brand; option.textContent = brand; carBrandSelect.appendChild(option); }); }
+            function populateCarModels(brand) { carModelSelect.innerHTML = '<option value="">-- Select Model --</option>'; if (brand && CAR_DATA[brand]) { CAR_DATA[brand].sort().forEach(model => { const option = document.createElement('option'); option.value = model; option.textContent = model; carModelSelect.appendChild(option); }); } }
+            
+            function updateBookingSummary() {
+                if (!state.bookingId) state.bookingId = generateBookingId();
+                const formData = new FormData(form); 
+                const data = Object.fromEntries(formData.entries()); 
+                
+                if (!state.selectedDate || !data.name || !data.phone || !data.plateNumber) { 
+                    bookingSummary.innerHTML = '<p>Please fill out the form to see your summary.</p>'; 
+                    return; 
+                } 
+                
+                const fullAddress = `${state.selectedHouseType || 'N/A'}, ${data.address1 || ''}${data.address2 ? ', ' + data.address2 : ''}${data.landmark ? ', near ' + data.landmark : ''}, Tiruchirappalli - ${data.pincode || ''}`; 
+                
+                bookingSummary.innerHTML = `
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Booking ID:</strong> ${state.bookingId}</p>
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Name:</strong> ${data.name}</p>
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Phone:</strong> ${data.phone}</p>
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Address:</strong> ${fullAddress}</p>
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Date:</strong> ${new Date(state.selectedDate).toLocaleDateString('en-GB', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Time Slot:</strong> ${data.timeSlot ? `${data.timeSlot} - ${(parseInt(data.timeSlot.split(':')[0]) + 1).toString().padStart(2, '0')}:00` : 'Not Selected'}</p>
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Car:</strong> ${data.carBrand} ${data.carModel} (${state.selectedCarType || 'N/A'})</p>
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Plate No:</strong> ${data.plateNumber.toUpperCase()}</p>
+                    <p><strong class="font-semibold brand-teal w-24 inline-block">Offer:</strong> Free Waterless Car Clean</p>`;
+
+                requestAnimationFrame(() => {
+                    if (formDetailsContainer.style.opacity === '1') {
+                         formDetailsContainer.style.maxHeight = formDetailsContainer.scrollHeight + 'px';
+                    }
+                });
+            }
+            
+            function startCountdown() { const campaignStart = new Date(CAMPAIGN_START_DATE).getTime(); countdownInterval = setInterval(() => { const now = new Date().getTime(); const distance = campaignStart - now; if (distance < 0) { clearInterval(countdownInterval); countdownTimerEl.innerHTML = `<div class="text-3xl font-bold brand-teal bg-gray-800 py-3 px-6 rounded-lg inline-block mx-auto">Campaign is LIVE!</div>`; return; } const days = Math.floor(distance / (1000 * 60 * 60 * 24)); const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); const seconds = Math.floor((distance % (1000 * 60)) / 1000); countdownTimerEl.innerHTML = `<div class="time-block"><div class="text-2xl md:text-3xl font-bold">${days}</div><div class="text-xs">Days</div></div><div class="time-block"><div class="text-2xl md:text-3xl font-bold">${hours}</div><div class="text-xs">Hours</div></div><div class="time-block"><div class="text-2xl md:text-3xl font-bold">${minutes}</div><div class="text-xs">Mins</div></div><div class="time-block"><div class="text-2xl md:text-3xl font-bold">${seconds}</div><div class="text-xs">Secs</div></div>`; }, 1000); }
+            function updateTotalSlotsDisplay() { const totalBooked = Object.values(campaignData.bookings).reduce((acc, day) => acc + day.total, 0); const totalSlots = CAMPAIGN_DATES.length * DAILY_SLOT_LIMIT; const slotsLeft = totalSlots - totalBooked; const percentageBooked = totalSlots > 0 ? (totalBooked / totalSlots) * 100 : 0; totalSlotsDisplayEl.innerHTML = `<div id="slot-counter-card"><div class="flex justify-between items-center"><div class="text-left"><p class="text-sm uppercase text-gray-400 font-semibold tracking-wider">Slots Claimed</p><span class="text-4xl font-black brand-teal">${totalBooked}</span><span class="text-xl font-bold text-gray-400"> / ${totalSlots}</span></div><div class="text-right"><p class="text-sm uppercase text-gray-400 font-semibold tracking-wider">Remaining</p><span class="text-4xl font-black text-white">${slotsLeft}</span></div></div><div class="slot-progress-bar" style="width: ${percentageBooked}%"></div></div>`; }
+            
+            function showThankYouPage(name, bookingId) {
+                bookingFormPage.classList.add('hidden');
+                homepage.classList.add('hidden');
+                document.getElementById('userName').textContent = name;
+                document.getElementById('bookingIdDisplay').textContent = bookingId;
+                thankYouPage.classList.remove('hidden');
+            }
+
+            // --- EVENT HANDLERS ---
+            offerCodeInput.addEventListener('input', () => {
+                const enteredCode = offerCodeInput.value.trim().toUpperCase();
+                if (enteredCode === VALID_OFFER_CODE) {
+                    proceedToBookBtn.disabled = false;
+                    offerCodeError.classList.add('hidden');
+                    offerCodeInput.classList.remove('border-red-500');
+                    offerCodeInput.classList.add('border-green-500');
+                } else {
+                    proceedToBookBtn.disabled = true;
+                    if (enteredCode.length > 0) {
+                        offerCodeError.textContent = 'Invalid code. Please try again or click "Get One".';
+                        offerCodeError.classList.remove('hidden');
+                        offerCodeInput.classList.add('border-red-500');
+                        offerCodeInput.classList.remove('border-green-500');
+                    } else {
+                        offerCodeError.classList.add('hidden');
+                        offerCodeInput.classList.remove('border-red-500', 'border-green-500');
+                    }
+                }
+            });
+
+            proceedToBookBtn.addEventListener('click', () => { termsModal.classList.remove('hidden'); });
+            termsAgreeCheckbox.addEventListener('change', () => { modalProceedBtn.disabled = !termsAgreeCheckbox.checked; });
+            modalProceedBtn.addEventListener('click', () => { termsModal.classList.add('hidden'); homepage.classList.add('hidden'); bookingFormPage.classList.remove('hidden'); });
+            termsModal.addEventListener('click', (e) => { if (e.target === termsModal) { termsModal.classList.add('hidden'); termsAgreeCheckbox.checked = false; modalProceedBtn.disabled = true; } });
+            goHomeBtn.addEventListener('click', () => location.reload());
+
+            plateNumberInput.addEventListener('input', (e) => {
+                const input = e.target;
+                const originalCursorPos = input.selectionStart;
+                const originalValue = input.value;
+                const formattedValue = originalValue.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                if (originalValue !== formattedValue) {
+                    input.value = formattedValue;
+                    input.setSelectionRange(originalCursorPos, originalCursorPos);
+                }
+            });
+
+            function handleDateSelection(dateStr) {
+                state.selectedDate = dateStr;
+                document.querySelectorAll('#date-selection .card-style').forEach(c => c.classList.remove('selected'));
+                document.querySelector(`#date-selection [data-date="${dateStr}"]`).classList.add('selected');
+
+                if (formDetailsContainer.style.maxHeight === '0px' || formDetailsContainer.style.maxHeight === '') {
+                   formDetailsContainer.style.opacity = '1';
+                   formDetailsContainer.style.maxHeight = formDetailsContainer.scrollHeight + 'px';
+                }
+
+                timeSlotSelect.innerHTML = '<option value="">-- Select a time slot --</option>';
+                const dateSlots = campaignData.bookings[dateStr].slots;
+                TIME_SLOTS.forEach(slot => {
+                    const slotData = dateSlots[slot];
+                    const isSlotFull = slotData.booked >= slotData.capacity;
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    const endHour = (parseInt(slot.split(':')[0]) + 1).toString().padStart(2, '0');
+                    option.textContent = `${slot} - ${endHour}:00 (${slotData.capacity - slotData.booked} left)`;
+                    option.disabled = isSlotFull;
+                    timeSlotSelect.appendChild(option);
+                });
+                updateBookingSummary();
+            }
+
+            function handleCardSelection(type, stateKey, containerSelector) { 
+                state[stateKey] = type; 
+                document.querySelectorAll(`${containerSelector} .card-style`).forEach(c => c.classList.remove('selected')); 
+                document.querySelector(`${containerSelector} [data-type="${type}"]`).classList.add('selected'); 
+                updateBookingSummary(); 
+            }
+            carBrandSelect.addEventListener('change', (e) => { populateCarModels(e.target.value); updateBookingSummary(); });
+            
+            form.addEventListener('input', updateBookingSummary);
+
+            form.addEventListener('submit', (e) => { 
+                e.preventDefault(); 
+                formError.textContent = ''; 
+                const formData = new FormData(form); 
+                const data = Object.fromEntries(formData.entries()); 
+                
+                // --- CUSTOM VALIDATION ---
+                const plateNumber = data.plateNumber.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                if (!PLATE_NUMBER_REGEX.test(plateNumber)) {
+                    formError.textContent = 'Please enter a valid number plate format (e.g., TN01AB1234).';
+                    return;
+                }
+                if (!PINCODE_REGEX.test(data.pincode)) {
+                    formError.textContent = 'Pincode must be 6 digits and start with 62.';
+                    return;
+                }
+                if (!TRICHY_PINCODES.includes(data.pincode)) {
+                    formError.textContent = 'Sorry, service is not available for this pincode.';
+                    return;
+                }
+
+                // --- DUPLICATION CHECKS ---
+                if (campaignData.usedData.phoneNumbers.includes(data.phone)) { formError.textContent = 'This phone number has already been used for a booking.'; return; } 
+                if (campaignData.usedData.plateNumbers.includes(plateNumber)) { formError.textContent = 'This car plate number has already been used for a booking.'; return; } 
+                const fullAddress = `${data.address1} ${data.address2} ${data.city} ${data.pincode}`.toLowerCase().replace(/\s/g, ''); 
+                if (campaignData.usedData.addresses.includes(fullAddress)) { formError.textContent = 'This address has already been used for a booking.'; return; } 
+                if (!state.selectedDate || !state.selectedCarType || !state.selectedHouseType) { formError.textContent = 'Please make sure to select a date, car type, and location type.'; return; } 
+                
+                // --- SAVE DATA & REDIRECT ---
+                const bookingId = state.bookingId;
+                campaignData.bookings[state.selectedDate].total++; 
+                campaignData.bookings[state.selectedDate].slots[data.timeSlot].booked++; 
+                campaignData.usedData.phoneNumbers.push(data.phone); 
+                campaignData.usedData.plateNumbers.push(plateNumber); 
+                campaignData.usedData.addresses.push(fullAddress); 
+                saveData(); 
+
+                const endHour = (parseInt(data.timeSlot.split(':')[0]) + 1).toString().padStart(2, '0'); 
+                const message = `Hello Clenzzo! I'd like to confirm my booking for the *Clenzzo 500 Celebration*.\n\n*Booking Details:*\n--------------------\n*Booking ID:* ${bookingId}\n*Name:* ${data.name}\n*Phone:* ${data.phone}\n*Date:* ${new Date(state.selectedDate).toLocaleDateString('en-GB')}\n*Time Slot:* ${data.timeSlot} - ${endHour}:00\n*Address:* ${state.selectedHouseType}, ${data.address1}${data.address2 ? ', ' + data.address2 : ''}${data.landmark ? ', near ' + data.landmark : ''}, Tiruchirappalli - ${data.pincode}\n*Car Type:* ${state.selectedCarType}\n*Car:* ${data.carBrand} ${data.carModel}\n*Plate No:* ${plateNumber}\n\nThank you!`.trim(); 
+                const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`; 
+                
+                window.open(whatsappUrl, '_blank');
+                showThankYouPage(data.name, bookingId);
+            });
+            
+            // --- INITIALIZATION ---
+            function init() {
+                setTimeout(createSwirlConfetti, 500);
+                setTimeout(startTransition, 3000);
+                
+                const getCodeWhatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('CLENZZO CLEAN')}`;
+                getOfferCodeBtn.href = getCodeWhatsappUrl;
+
+                renderDateCards();
+                renderCardSelection(carTypeContainer, CAR_TYPES, 'selectedCarType', (type) => handleCardSelection(type, 'selectedCarType', '#car-type-selection'));
+                renderCardSelection(houseTypeContainer, HOUSE_TYPES, 'selectedHouseType', (type) => handleCardSelection(type, 'selectedHouseType', '#house-type-selection'));
+                populateCarBrands();
+                startCountdown();
+                updateTotalSlotsDisplay();
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
+
+
